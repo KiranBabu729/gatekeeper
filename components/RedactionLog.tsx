@@ -12,7 +12,7 @@ export function RedactionLog({ entries }: { entries: RedactionEntry[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between rounded border border-gk-accent/40 bg-gk-accent/10 px-3 py-2">
+      <div className="flex items-center justify-between rounded border border-gk-accent/40 bg-gk-accent/[0.08] px-3 py-2">
         <span className="text-sm font-medium text-gk-text">
           {entries.length} item{entries.length === 1 ? "" : "s"} removed before this text reached the drafting model
         </span>

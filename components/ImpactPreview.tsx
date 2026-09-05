@@ -56,7 +56,7 @@ export function ImpactPreview({ currentRaw }: { currentRaw: string }) {
             {result.impact
               .filter((i) => i.wouldNowFail)
               .map((i) => (
-                <div key={i.processId} className="rounded border border-gk-danger/40 bg-gk-danger/5 p-3 text-xs">
+                <div key={i.processId} className="rounded border border-gk-danger/40 bg-gk-danger/[0.06] p-3 text-xs">
                   <div className="gk-mono font-medium text-gk-text">{i.ticketKey}</div>
                   {Object.entries(i.newFindingsByAudience).map(([audience, findings]) => (
                     <div key={audience} className="mt-1 text-gk-text-secondary">

@@ -62,7 +62,7 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
       </div>
 
       {failedGate && (
-        <div className="rounded border border-gk-danger/40 bg-gk-danger/10 p-4">
+        <div className="rounded border border-gk-danger/40 bg-gk-danger/[0.08] p-4">
           <div className="text-sm font-medium text-gk-danger">
             Pipeline stopped: this ticket doesn&apos;t have enough information to draft a customer-facing message.
           </div>

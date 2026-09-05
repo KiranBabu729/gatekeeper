@@ -15,7 +15,7 @@ export default function EvalsPage() {
 
       <div
         className={`rounded border p-4 ${
-          report.gatePassed ? "border-gk-success/40 bg-gk-success/10" : "border-gk-danger/40 bg-gk-danger/10"
+          report.gatePassed ? "border-gk-success/40 bg-gk-success/[0.08]" : "border-gk-danger/40 bg-gk-danger/[0.08]"
         }`}
       >
         <div className={`text-sm font-semibold ${report.gatePassed ? "text-gk-success" : "text-gk-danger"}`}>

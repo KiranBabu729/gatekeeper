@@ -126,7 +126,7 @@ export function ReviewPanel({ process: initial }: { process: ProcessData }) {
       </div>
 
       {variant.isStale && (
-        <div className="flex items-center justify-between rounded border border-gk-warning/40 bg-gk-warning/10 px-3 py-2 text-sm">
+        <div className="flex items-center justify-between rounded border border-gk-warning/40 bg-gk-warning/[0.08] px-3 py-2 text-sm">
           <span className="text-gk-warning">A sibling variant was edited — this one may be out of sync with the facts.</span>
           <button onClick={resync} className="rounded border border-gk-border px-2 py-1 text-xs text-gk-text">
             Re-sync unedited siblings
@@ -193,7 +193,7 @@ export function ReviewPanel({ process: initial }: { process: ProcessData }) {
           <h3 className="mb-2 text-sm font-medium text-gk-danger">Blocking findings ({blockFindings.length})</h3>
           <div className="space-y-2">
             {blockFindings.map((f, i) => (
-              <div key={i} className="rounded border border-gk-danger/40 bg-gk-danger/5 p-3">
+              <div key={i} className="rounded border border-gk-danger/40 bg-gk-danger/[0.06] p-3">
                 <div className="flex items-center gap-2">
                   <SeverityBadge severity={f.severity} />
                   <span className="gk-mono text-xs text-gk-text-secondary">{f.ruleId}</span>
@@ -214,7 +214,7 @@ export function ReviewPanel({ process: initial }: { process: ProcessData }) {
           <h3 className="mb-2 text-sm font-medium text-gk-warning">Warnings ({warnFindings.length})</h3>
           <div className="space-y-2">
             {warnFindings.map((f, i) => (
-              <div key={i} className="rounded border border-gk-warning/40 bg-gk-warning/5 p-3">
+              <div key={i} className="rounded border border-gk-warning/40 bg-gk-warning/[0.06] p-3">
                 <div className="flex items-center gap-2">
                   <SeverityBadge severity={f.severity} />
                   <span className="gk-mono text-xs text-gk-text-secondary">{f.ruleId}</span>
