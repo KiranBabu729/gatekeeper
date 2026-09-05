@@ -72,4 +72,6 @@ This is a weekend prototype, not a production system:
 - The 12 claims-rule detectors are deterministic pattern matchers standing in for what would be LLM classifier calls in production. They catch the adversarial phrasings in this repo's own golden set; a real classifier would also catch phrasing regex structurally cannot, and a golden set built by someone other than the detector's author would be a stronger signal than the 100% above.
 - 2 risk tiers (`standard` / `requires_legal`), not the full range a real policy team would want.
 
-MIT licensed — see [LICENSE](LICENSE).
+## License
+
+Source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE) — read it, run it, learn from it, non-commercially, freely. Commercial use requires a separate license from me. If that's what you want to do, get in touch and let's talk.

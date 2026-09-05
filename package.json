@@ -2,6 +2,8 @@
   "name": "gatekeeper",
   "version": "0.1.0",
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "author": "Kiran Babu",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
