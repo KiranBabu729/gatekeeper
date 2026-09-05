@@ -50,6 +50,7 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
   const [stage, setStage] = useState<(typeof STAGES)[number]>(failedGate ? "Triage" : "Sanitize");
   const [audience, setAudience] = useState<VariantAudience>("customer_email");
   const [replaying, setReplaying] = useState(false);
+  const [compareAll, setCompareAll] = useState(false);
   const cancelRef = useRef(false);
 
   const availableStages = failedGate ? (["Ingest", "Triage"] as const) : STAGES;
@@ -181,13 +182,34 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
 
       {stage === "Draft" && process.variants && (
         <div className="space-y-3">
-          <AudienceTabs audience={audience} setAudience={setAudience} disabled={replaying} />
-          <pre className="whitespace-pre-wrap rounded border border-gk-border bg-gk-surface p-4 text-sm text-gk-text">
-            {process.variants[audience].body}
-          </pre>
-          <div className="text-xs text-gk-text-secondary">
-            derived from facts hash <span className="gk-mono">{process.variants[audience].derivedFromFactsHash}</span>
+          <div className="flex items-center justify-between">
+            <AudienceTabs audience={audience} setAudience={setAudience} disabled={replaying || compareAll} />
+            <button
+              onClick={() => setCompareAll((v) => !v)}
+              className="rounded border border-gk-border px-2.5 py-1 text-xs text-gk-text-secondary hover:text-gk-text"
+            >
+              {compareAll ? "Show one at a time" : "Compare all four"}
+            </button>
           </div>
+          {compareAll ? (
+            <div className="grid grid-cols-2 gap-3">
+              {AUDIENCE_ORDER.map((a) => (
+                <div key={a} className="rounded border border-gk-border bg-gk-surface p-3">
+                  <div className="mb-1.5 text-xs font-medium text-gk-text-secondary">{AUDIENCE_LABEL[a]}</div>
+                  <pre className="whitespace-pre-wrap text-xs text-gk-text">{process.variants![a].body}</pre>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              <pre className="whitespace-pre-wrap rounded border border-gk-border bg-gk-surface p-4 text-sm text-gk-text">
+                {process.variants[audience].body}
+              </pre>
+              <div className="text-xs text-gk-text-secondary">
+                derived from facts hash <span className="gk-mono">{process.variants[audience].derivedFromFactsHash}</span>
+              </div>
+            </>
+          )}
         </div>
       )}
 
