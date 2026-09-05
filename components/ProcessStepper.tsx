@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import type {
   SourceArtifact,
@@ -33,13 +33,50 @@ const AUDIENCE_LABEL: Record<VariantAudience, string> = {
 };
 
 const STAGES = ["Ingest", "Triage", "Sanitize", "Draft", "Check"] as const;
+const AUDIENCE_ORDER: VariantAudience[] = ["internal_brief", "customer_email", "marketing", "in_app"];
+
+// One orchestrated sequence, no per-element animation — tuned so the whole
+// pipeline is visible end to end in a single screen recording.
+const STAGE_DELAY_MS = 4500;
+const SANITIZE_DELAY_MS = 6500;
+const AUDIENCE_DELAY_MS = 3800;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export function ProcessStepper({ process }: { process: ProcessData }) {
   const failedGate = process.status === "sufficiency_failed";
   const [stage, setStage] = useState<(typeof STAGES)[number]>(failedGate ? "Triage" : "Sanitize");
   const [audience, setAudience] = useState<VariantAudience>("customer_email");
+  const [replaying, setReplaying] = useState(false);
+  const cancelRef = useRef(false);
 
   const availableStages = failedGate ? (["Ingest", "Triage"] as const) : STAGES;
+
+  const runReplay = useCallback(async () => {
+    if (replaying) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    cancelRef.current = false;
+    setReplaying(true);
+
+    const sequence = failedGate ? (["Ingest", "Triage"] as const) : STAGES;
+    for (const s of sequence) {
+      if (cancelRef.current) break;
+      setStage(s);
+      const delay = reduceMotion ? 0 : s === "Sanitize" ? SANITIZE_DELAY_MS : STAGE_DELAY_MS;
+      if (s === "Draft" || s === "Check") {
+        for (const a of AUDIENCE_ORDER) {
+          if (cancelRef.current) break;
+          setAudience(a);
+          await sleep(reduceMotion ? 0 : AUDIENCE_DELAY_MS);
+        }
+      } else {
+        await sleep(delay);
+      }
+    }
+    setReplaying(false);
+  }, [failedGate, replaying]);
 
   return (
     <div className="space-y-6">
@@ -50,6 +87,13 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
         </div>
         <div className="flex items-center gap-3">
           <StatusBadge status={process.status} />
+          <button
+            onClick={runReplay}
+            disabled={replaying}
+            className="rounded border border-gk-border px-3 py-1.5 text-sm font-medium text-gk-text disabled:opacity-60"
+          >
+            {replaying ? "Replaying…" : "▶ Replay pipeline"}
+          </button>
           {!failedGate && (
             <Link
               href={`/process/${process.id}/review`}
@@ -79,7 +123,8 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
           <button
             key={s}
             onClick={() => setStage(s)}
-            className={`rounded-t px-3 py-2 text-sm ${
+            disabled={replaying}
+            className={`rounded-t px-3 py-2 text-sm disabled:cursor-default ${
               stage === s ? "border-b-2 border-gk-accent text-gk-text" : "text-gk-text-secondary hover:text-gk-text"
             }`}
           >
@@ -136,7 +181,7 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
 
       {stage === "Draft" && process.variants && (
         <div className="space-y-3">
-          <AudienceTabs audience={audience} setAudience={setAudience} />
+          <AudienceTabs audience={audience} setAudience={setAudience} disabled={replaying} />
           <pre className="whitespace-pre-wrap rounded border border-gk-border bg-gk-surface p-4 text-sm text-gk-text">
             {process.variants[audience].body}
           </pre>
@@ -148,7 +193,7 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
 
       {stage === "Check" && process.findings && (
         <div className="space-y-3">
-          <AudienceTabs audience={audience} setAudience={setAudience} />
+          <AudienceTabs audience={audience} setAudience={setAudience} disabled={replaying} />
           <FindingsList findings={process.findings[audience]} />
         </div>
       )}
@@ -159,9 +204,11 @@ export function ProcessStepper({ process }: { process: ProcessData }) {
 function AudienceTabs({
   audience,
   setAudience,
+  disabled,
 }: {
   audience: VariantAudience;
   setAudience: (a: VariantAudience) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex gap-1">
@@ -169,7 +216,8 @@ function AudienceTabs({
         <button
           key={a}
           onClick={() => setAudience(a)}
-          className={`rounded px-2.5 py-1 text-xs ${
+          disabled={disabled}
+          className={`rounded px-2.5 py-1 text-xs disabled:cursor-default ${
             audience === a ? "bg-gk-surface-raised text-gk-text" : "text-gk-text-secondary hover:text-gk-text"
           }`}
         >
