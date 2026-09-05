@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Process {
+  id        String   @id @default(cuid())
+  ticketKey String
+  status    String // ingested | triaged | sufficiency_failed | sanitized | drafted | checked | approved | exported
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sourceArtifact Json
+  triageResult   Json?
+  sanitizedFacts Json?
+  variants       Json? // Variant[]
+  findings       Json? // Finding[] keyed by variant audience
+  auditRecord    Json?
+}
+
+model PolicyVersion {
+  id            String   @id @default(cuid())
+  policyVersion String   @unique
+  effectiveFrom String
+  changelog     String
+  yaml          String
+  createdAt     DateTime @default(now())
+}

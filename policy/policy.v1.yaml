@@ -1,0 +1,153 @@
+policy_version: "2026.08.1"
+effective_from: "2026-08-01"
+owners:
+  legal: legal@example.com
+  brand: brand@example.com
+changelog: "Initial policy: lexicon, 11 claims rules, channel contracts. SUP-01 blocks on marketing."
+voice:
+  register: professional_direct
+  person: second
+lexicon:
+  banned:
+    - term: bulletproof
+      replacement: resilient
+      severity: block
+      rationale: Implies an absolute security guarantee.
+    - term: guaranteed
+      replacement: designed to
+      severity: block
+      rationale: Reads as a contractual guarantee.
+    - term: unbreakable
+      replacement: highly available
+      severity: block
+      rationale: Implies an absolute uptime guarantee.
+    - term: revolutionary
+      replacement: notable
+      severity: warn
+      rationale: Unsubstantiated superlative.
+    - term: best-in-class
+      replacement: highly rated
+      severity: warn
+      rationale: Unsubstantiated superlative.
+rules:
+  - id: FWD-01
+    class: forward_looking
+    severity: block
+    scope:
+      audiences: [customer_email, marketing, in_app, internal_brief]
+      types: [all]
+      audience_overrides:
+        - { audience: internal_brief, severity: advise }
+    description: Dated forward-looking commitments (e.g. "by Q3", "available next month").
+    remediation: "Remove the date, or route through legal for a roadmap disclaimer."
+    tests:
+      positive: ["This feature will roll out to all customers by Q3 2026."]
+      negative: ["We're exploring improvements to this area over time."]
+  - id: FWD-02
+    class: forward_looking
+    severity: block
+    scope: { audiences: [customer_email, marketing, in_app], types: [all] }
+    description: References to unreleased features.
+    remediation: "Remove the reference or hold the message until the feature ships."
+    tests:
+      positive: ["This pairs well with our upcoming AI assistant, launching soon."]
+      negative: ["This pairs well with existing dashboard filters."]
+  - id: GUAR-01
+    class: guarantee
+    severity: block
+    scope: { audiences: [customer_email, marketing, in_app], types: [all] }
+    description: Absolute guarantees (ensures, eliminates, always, never fails).
+    remediation: "Use hedged language: 'is designed to', 'helps reduce'."
+    tests:
+      positive: ["This update eliminates all downtime, always."]
+      negative: ["This update is designed to reduce downtime."]
+  - id: GUAR-02
+    class: guarantee
+    severity: block
+    scope: { audiences: [customer_email, marketing], types: [all] }
+    description: Absolute security claims.
+    remediation: "Use hedged language: 'designed to', 'helps protect'."
+    tests:
+      positive: ["Your data is fully secure."]
+      negative: ["Encryption at rest helps protect your data."]
+  - id: SLA-01
+    class: sla
+    severity: block
+    scope: { audiences: [customer_email, marketing], types: [all] }
+    description: Language that reads as a new or changed SLA commitment.
+    remediation: "Route SLA language through legal review."
+    tests:
+      positive: ["We now guarantee 99.999% uptime for all accounts."]
+      negative: ["Our infrastructure is built for high availability."]
+  - id: SUP-01
+    class: superlative
+    severity: block
+    scope: { audiences: [marketing], types: [all] }
+    description: "Unsubstantiated superlatives (best, #1, fastest)."
+    remediation: "Add a substantiation note or soften the claim."
+    tests:
+      positive: ["This is the best dashboard on the market."]
+      negative: ["This dashboard is faster than our previous version, per internal benchmarks."]
+  - id: COMP-01
+    class: competitor
+    severity: block
+    scope: { audiences: [customer_email, marketing, in_app], types: [all] }
+    description: Named competitor comparisons.
+    remediation: "Remove the competitor name; compare against your own prior version instead."
+    tests:
+      positive: ["Unlike CompetitorX, we never lose your data."]
+      negative: ["Unlike our previous release, this version never loses your data."]
+  - id: ADM-01
+    class: fault_admission
+    severity: block
+    scope: { audiences: [customer_email, marketing, in_app], types: [incident] }
+    description: Explicit fault admission in incident communications.
+    remediation: "Describe impact and remediation without assigning fault."
+    tests:
+      positive: ["This outage was our fault due to a bad deployment."]
+      negative: ["We identified the issue and restored service."]
+  - id: CAUSE-01
+    class: root_cause
+    severity: block
+    scope: { audiences: [customer_email, marketing, in_app], types: [incident] }
+    description: Root cause stated before an RCA is complete.
+    remediation: "State that an investigation is underway; do not name a cause pre-RCA."
+    tests:
+      positive: ["The outage was caused by a misconfigured load balancer."]
+      negative: ["We are investigating the root cause and will share findings once confirmed."]
+  - id: PII-01
+    class: pii
+    severity: block
+    scope: { audiences: [customer_email, marketing, in_app, internal_brief], types: [all] }
+    description: Named individuals or account identifiers.
+    remediation: "Remove names and account identifiers."
+    tests:
+      positive: ["Contact Jane Doe at jane@example.com for details."]
+      negative: ["Contact your account team for details."]
+  - id: DISC-01
+    class: disclaimer
+    severity: block
+    scope: { audiences: [customer_email, marketing], types: [security_advisory] }
+    description: Required disclaimer missing for security-advisory messages.
+    remediation: "Add the standard security-advisory disclaimer footer."
+    tests:
+      positive: ["We patched the vulnerability."]
+      negative: ["We patched the vulnerability. For details on our disclosure process, see our security policy."]
+channels:
+  internal_brief:
+    max_words: 800
+    required_sections: [summary, customer_impact, known_issues, support_talking_points, escalation_path]
+    forbidden: []
+  customer_email:
+    max_words: 300
+    required_sections: [what_changed, customer_impact, action_required]
+    forbidden: [ticket_ids, engineer_names, root_cause_detail]
+  marketing:
+    max_words: 200
+    required_sections: [headline, benefit]
+    forbidden: [ticket_ids, engineer_names, root_cause_detail]
+  in_app:
+    max_words: 60
+    max_sentences: 4
+    required_sections: []
+    forbidden: [ticket_ids, engineer_names, root_cause_detail]
