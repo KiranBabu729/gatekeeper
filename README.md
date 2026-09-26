@@ -1,5 +1,7 @@
 # Gatekeeper
 
+*Built by Kiran Babu Ganesha.*
+
 Gatekeeper takes an internal engineering ticket and turns it into four audience-specific customer communications, without ever letting the drafting model see the raw ticket.
 
 ## The architectural claim
@@ -74,4 +76,6 @@ This is a weekend prototype, not a production system:
 
 ## License
 
-Source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE) — read it, run it, learn from it, non-commercially, freely. Commercial use requires a separate license from me. If that's what you want to do, get in touch and let's talk.
+Gatekeeper was designed and built by **Kiran Babu Ganesha**.
+
+It's open source under the [Apache License 2.0](LICENSE): use it, change it, ship it, commercially or not. The one thing I ask for, and the license requires, is credit: if you redistribute Gatekeeper or anything built from it, keep the copyright line and include the [NOTICE](NOTICE) file. If you use it in your work, a mention is appreciated. [CITATION.cff](CITATION.cff) has the details.

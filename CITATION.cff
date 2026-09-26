@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use Gatekeeper or build on it, please credit it as below."
+title: "Gatekeeper"
+abstract: "Turns an internal engineering ticket into four audience-specific customer communications, with a sanitization boundary the drafting model cannot cross and an audience-scoped policy check."
+authors:
+  - given-names: Kiran Babu
+    family-names: Ganesha
+    email: kiranbabu729@gmail.com
+license: Apache-2.0
+date-released: 2026-09-26
+version: 0.1.0

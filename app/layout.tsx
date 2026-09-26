@@ -19,6 +19,9 @@ export default function RootLayout({
         <UserProvider>
           <Header />
           <main className="mx-auto max-w-[1280px] px-6 py-8">{children}</main>
+          <footer className="mx-auto max-w-[1280px] px-6 pb-8 text-xs text-gk-text-secondary">
+            Gatekeeper · Built by Kiran Babu Ganesha · Apache 2.0
+          </footer>
         </UserProvider>
       </body>
     </html>
