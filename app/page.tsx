@@ -3,20 +3,29 @@ import { FIXTURE_TICKETS } from "@/fixtures/tickets";
 import { TicketPicker } from "@/components/TicketPicker";
 import { prisma } from "@/lib/db/client";
 import { StatusBadge } from "@/components/Badge";
+import { JiraImport } from "@/components/JiraImport";
+import { jiraSource } from "@/lib/sources/jira/service";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
-  const recent = await prisma.process.findMany({ orderBy: { createdAt: "desc" }, take: 10 });
+export default async function Home({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const one = (v: string | string[] | undefined) => (typeof v === "string" ? v : undefined);
+  const [recent, jiraStatus] = await Promise.all([
+    prisma.process.findMany({ orderBy: { createdAt: "desc" }, take: 10 }),
+    jiraSource().status(),
+  ]);
 
   return (
     <div className="space-y-10">
       <div>
         <h1 className="text-lg font-semibold text-gk-text">Pick a ticket</h1>
         <p className="mt-1 text-sm text-gk-text-secondary">
-          Run any of the 8 seeded fixtures through the pipeline, or paste raw ticket JSON.
+          Import a ticket from Jira, run one of the 8 seeded fixtures, or paste raw ticket JSON.
         </p>
       </div>
+
+      <JiraImport status={jiraStatus} returned={{ status: one(params.status), error: one(params.error) }} />
 
       <TicketPicker tickets={FIXTURE_TICKETS} />
 

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db/client";
 import { SourceArtifactSchema } from "@/lib/schemas";
 import { runPipeline } from "@/lib/pipeline/run";
 import { FIXTURE_TICKETS } from "@/fixtures/tickets";
+import { jiraSource, jiraErrorResponse } from "@/lib/sources/jira/service";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -11,6 +12,13 @@ export async function POST(req: NextRequest) {
   if (body.fixtureId) {
     source = FIXTURE_TICKETS.find((t) => t.id === body.fixtureId);
     if (!source) return NextResponse.json({ error: "Unknown fixture" }, { status: 400 });
+  } else if (typeof body.jiraKey === "string") {
+    try {
+      source = await jiraSource().issue(body.jiraKey.trim().toUpperCase());
+    } catch (err) {
+      const { status, error } = jiraErrorResponse(err);
+      return NextResponse.json({ error }, { status });
+    }
   } else if (body.ticket) {
     const parsed = SourceArtifactSchema.omit({ rawHash: true, ingestedAt: true }).safeParse(body.ticket);
     if (!parsed.success) {
@@ -18,7 +26,7 @@ export async function POST(req: NextRequest) {
     }
     source = { ...parsed.data, rawHash: "pasted", ingestedAt: new Date().toISOString() };
   } else {
-    return NextResponse.json({ error: "Provide fixtureId or ticket" }, { status: 400 });
+    return NextResponse.json({ error: "Provide fixtureId, jiraKey or ticket" }, { status: 400 });
   }
 
   const result = await runPipeline(source);
